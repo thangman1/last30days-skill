@@ -81,6 +81,8 @@ Before doing anything, parse the user's input for:
 Common patterns:
 - `[topic] for [tool]` → "web mockups for Nano Banana Pro" → TOOL IS SPECIFIED
 - `[topic] prompts for [tool]` → "UI design prompts for Midjourney" → TOOL IS SPECIFIED
+- `using [tool] to [create/make/generate] [topic]` → "using ChatGPT to make images of dogs" → TOOL IS SPECIFIED, QUERY_TYPE = PROMPTING, TOPIC = what they're creating (e.g. "dog images")
+- `[create/make/generate] [topic] with/in [tool]` → "make portrait photos with Midjourney" → TOOL IS SPECIFIED, QUERY_TYPE = PROMPTING
 - Just `[topic]` → "iOS design mockups" → TOOL NOT SPECIFIED, that's OK
 - "best [topic]" or "top [topic]" → QUERY_TYPE = RECOMMENDATIONS
 - "what are the best [topic]" → QUERY_TYPE = RECOMMENDATIONS

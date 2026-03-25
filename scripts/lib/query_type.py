@@ -16,7 +16,8 @@ _OPINION_PATTERNS = re.compile(
     r"\b(worth it|thoughts on|opinion|review|experience with|recommend|should i|pros and cons|good or bad)\b", re.I
 )
 _HOWTO_PATTERNS = re.compile(
-    r"\b(how to|tutorial|step by step|setup|install|configure|deploy|migrate|implement|build a|create a|prompting|prompts?|best practices|tips|examples|animation|animations|video workflow|render pipeline)\b",
+    r"\b(how to|tutorial|step by step|setup|install|configure|deploy|migrate|implement|build a|create a|prompting|prompts?|best practices|tips|examples|animation|animations|video workflow|render pipeline)\b"
+    r"|using [\w][\w\s\-\.]* to (make|create|generate|build|produce|render|draw|design)\b",
     re.I,
 )
 _COMPARISON_PATTERNS = re.compile(
