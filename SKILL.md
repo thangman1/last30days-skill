@@ -76,6 +76,7 @@ Before doing anything, parse the user's input for:
    - **RECOMMENDATIONS** - "best X", "top X", "what X should I use", "recommended X" → User wants a LIST of specific things
    - **NEWS** - "what's happening with X", "X news", "latest on X" → User wants current events/updates
    - **COMPARISON** - "X vs Y", "X versus Y", "compare X and Y", "X or Y which is better" → User wants a side-by-side comparison
+   - **PORTFOLIO** - "invest $X", "beat the S&P 500", "stock portfolio", "what should I buy with $X", "manage my money" → User wants a research-driven investment portfolio allocation
    - **GENERAL** - anything else → User wants broad understanding of the topic
 
 Common patterns:
@@ -85,6 +86,7 @@ Common patterns:
 - "best [topic]" or "top [topic]" → QUERY_TYPE = RECOMMENDATIONS
 - "what are the best [topic]" → QUERY_TYPE = RECOMMENDATIONS
 - "X vs Y" or "X versus Y" → QUERY_TYPE = COMPARISON, TOPIC_A = X, TOPIC_B = Y (split on ` vs ` or ` versus ` with spaces)
+- "invest $X", "beat the S&P 500", "portfolio with $X", "manage my $X", "what stocks to buy" → QUERY_TYPE = PORTFOLIO; extract BUDGET (numeric, default 50000) and RISK (conservative/moderate/aggressive, default moderate)
 
 **IMPORTANT: Do NOT ask about target tool before research.**
 - If tool is specified in the query, use it
@@ -197,6 +199,37 @@ python3 "${SKILL_ROOT}/scripts/last30days.py" "{TOPIC_A} vs {TOPIC_B}" --emit=co
 Then do WebSearch for: `{TOPIC_A} vs {TOPIC_B} comparison 2026` and `{TOPIC_A} vs {TOPIC_B} which is better`.
 
 **Skip the normal Step 1 below** - go directly to the comparison synthesis format (see "If QUERY_TYPE = COMPARISON" in the synthesis section).
+
+---
+
+## If QUERY_TYPE = PORTFOLIO
+
+When the user asks about investing money, building a portfolio, or beating the S&P 500:
+
+**Parse from input:**
+- `BUDGET` = dollar amount mentioned (e.g. "50000" from "$50,000", "50k", or "50 grand") — default `50000`
+- `RISK` = risk tolerance if mentioned ("conservative", "moderate", "aggressive") — default `moderate`
+
+**Run the portfolio script:**
+
+```bash
+python3 "${SKILL_ROOT}/scripts/portfolio.py" --budget={BUDGET} --risk={RISK} --emit=md --mock
+```
+
+Use a **timeout of 60000** (1 minute). The `--mock` flag uses embedded research fixtures so no API keys are needed for a fast first response.
+
+**For a live research-backed portfolio** (requires API keys), omit `--mock`:
+```bash
+python3 "${SKILL_ROOT}/scripts/portfolio.py" --budget={BUDGET} --risk={RISK} --emit=md
+```
+
+**After running the script, display its full markdown output verbatim**, then add:
+
+1. **A brief synthesis paragraph** explaining why the top positions were chosen based on the research signal heatmap in the output.
+2. **A risk reminder** tailored to the user's chosen risk level.
+3. **An invitation** (see PORTFOLIO invitation format in the synthesis section).
+
+**Skip the normal Step 1 (last30days.py) and Step 2 (WebSearch) below** — the portfolio script handles its own research internally.
 
 ---
 
@@ -584,6 +617,16 @@ I've compared {TOPIC_A} vs {TOPIC_B} using the latest community data. Some thing
 - [Deep dive into {TOPIC_B} alone with /last30days {TOPIC_B}]
 - [Focus on a specific dimension from the comparison table]
 - [Look at a different time period with --days=7 or --days=90]
+```
+
+**If QUERY_TYPE = PORTFOLIO:**
+```
+---
+Your {RISK} portfolio is ready. Some things you can do next:
+- Rerun with a different risk level: `/last30days invest $50k aggressive`
+- Ask me to justify any specific position (e.g. "why NVDA at 25%?")
+- Ask what the watchlist tickers would look like as a position
+- Ask for a rebalancing plan after 6 months
 ```
 
 **If QUERY_TYPE = GENERAL:**
